@@ -128,14 +128,50 @@ abl-mcp-server
     └── BE, Service, Controller, Workflow, Test, ABLDoc
 ```
 
-## Running
+## Installation
+
+The server is distributed as a GitHub package (not published to npm). Install directly from the repo:
 
 ```sh
-# Development
-npm run build
-node dist/index.js
+# npm
+npm install github:breakit/abl-mcp-server
 
-# As MCP server (stdio)
+# pnpm
+pnpm add github:breakit/abl-mcp-server
+
+# yarn
+yarn add github:breakit/abl-mcp-server
+```
+
+### One-shot usage (no install)
+
+```sh
+npx github:breakit/abl-mcp-server
+```
+
+### As an MCP server dependency
+
+Add to your project's `package.json`:
+
+```json
+"dependencies": {
+  "@breakit/abl-mcp-server": "github:breakit/abl-mcp-server"
+}
+```
+
+Then import in your MCP host:
+
+```typescript
+import { createServer } from '@breakit/abl-mcp-server'
+```
+
+## Development
+
+```sh
+git clone https://github.com/breakit/abl-mcp-server.git
+cd abl-mcp-server
+npm install
+npm run build
 npm start
 ```
 
