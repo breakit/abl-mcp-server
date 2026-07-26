@@ -1,10 +1,21 @@
 import { readFileSync, existsSync } from 'fs'
-import { resolve, dirname } from 'path'
+import { resolve, dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 import type { MCPConfig, LoadedConfig, LintRuleSpec } from './types.js'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const SERVER_CONFIG = resolve(__dirname, '..', 'config.yaml')
+let __dirname: string
+try { __dirname = dirname(fileURLToPath(import.meta.url)) } catch { __dirname = process.cwd() }
+
+function findConfigYaml(): string {
+  const candidates = [
+    resolve(__dirname, '..', 'config.yaml'),           // dist/ → ../config.yaml
+    resolve(__dirname, 'config.yaml'),                 // root → config.yaml
+    join(process.cwd(), 'config.yaml'),                 // CWD fallback
+  ]
+  for (const c of candidates) if (existsSync(c)) return c
+  return candidates[0]
+}
+const SERVER_CONFIG = findConfigYaml()
 
 const DEFAULT_TOOLS = [
   'read-abl-file', 'query-abl-symbols', 'read-df-file',
@@ -34,8 +45,8 @@ function parseYaml(text: string): MCPConfig {
     if (!trimmed || trimmed.startsWith('#')) continue
 
     if (trimmed === 'tools:') { inLint = false; continue }
-    if (trimmed === 'enabled:') { currentList = tools.enabled; tools.enabled = []; continue }
-    if (trimmed === 'disabled:') { currentList = tools.disabled; tools.disabled = []; continue }
+    if (trimmed === 'enabled:') { tools.enabled = []; currentList = tools.enabled; continue }
+    if (trimmed === 'disabled:') { tools.disabled = []; currentList = tools.disabled; continue }
 
     if (trimmed === 'lint:') { inLint = true; currentList = null; continue }
 
