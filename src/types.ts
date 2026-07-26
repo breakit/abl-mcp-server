@@ -1,3 +1,5 @@
+import type { LintRuleSpec } from '@breakit/abl-mcp-core'
+
 export interface ToolModule {
   name: string
   description: string
@@ -10,14 +12,20 @@ export interface ToolModule {
   category?: 'analytical' | 'generative'
 }
 
+export type { LintRuleSpec }
+
 export interface MCPConfig {
   tools: {
     enabled: string[]
     disabled: string[]
+  }
+  lint?: {
+    rules?: Record<string, LintRuleSpec>
   }
 }
 
 export interface LoadedConfig {
   allToolNames: string[]
   isEnabled(name: string): boolean
+  lintRules: Record<string, LintRuleSpec>
 }

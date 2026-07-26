@@ -24,3 +24,24 @@ tools:
     - gen-ablunit-test
 
   disabled: []
+
+# Lint rules — override built-in rules or add custom ones
+# Built-in rules: no-undo, no-undo-param, pause, global-define, recid, shared,
+#   shell-call, hardcoded-email, no-lock-type, find-no-error, for-each-no-where,
+#   exclusive-no-wait, no-index, end-type, block-label, lex-colon, method-name-case,
+#   class-name-case, function-name-case, backslash-in-string, colon-t, string-concat,
+#   dot-comment, return-error, weak-char, release-statement, public-var, nolonglines,
+#   run-backslash, include-case, include-backslash, table-name, when-misuse
+lint:
+  rules:
+    # Example: add a custom rule
+    # my-naming-rule:
+    #   pattern: '^\\s*PROCEDURE\\s+[a-z]'
+    #   message: 'Procedure names should start with uppercase'
+    #   severity: warning
+
+    # Example: override severity of a built-in rule
+    # no-undo:
+    #   pattern: '^DEFINE (?:VARIABLE|VAR) ...'
+    #   message: 'DEFINE VARIABLE should include NO-UNDO'
+    #   severity: warning      # downgrade from error to warning

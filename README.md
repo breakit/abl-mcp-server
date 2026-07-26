@@ -84,7 +84,42 @@ All 23 tools are available but only a curated subset is enabled by default. Enab
 | `analyze-dependencies` | Build a full dependency graph — includes, calls, cycles, orphans |
 | `df-diff` | Compare two `.df` schema files — structured diff |
 | `find-dead-code` | Find unused functions, includes, and preprocessor defines |
-| `abl-lint` | Lint ABL files for coding conventions |
+| `abl-lint` | Lint ABL files for coding conventions (33 built-in rules) |
+
+### Lint Rules
+
+`abl-lint` ships with 33 built-in rules inspired by [Prolint](https://github.com/jcaillon/prolint). To see all rules: call `abl-lint` with `listRules: true`.
+
+Customize rules via `abl-mcp-server.yaml`:
+
+```yaml
+lint:
+  rules:
+    # Override a built-in rule's severity
+    no-undo:
+      pattern: '^DEFINE (?:VARIABLE|VAR) +\w+ (?:AS \w+ )?(?!.*NO-UNDO)'
+      message: 'DEFINE VARIABLE should include NO-UNDO'
+      severity: warning
+
+    # Add a custom rule
+    my-naming-convention:
+      pattern: '^\\s*PROCEDURE\\s+[a-z\\d]'
+      message: 'Procedure names should start with uppercase'
+      severity: warning
+      filePattern: '*.p,*.w'
+```
+
+| Group | Rules |
+|---|---|
+| **No-undo / Lock** | `no-undo`, `no-undo-param` |
+| **Deprecations** | `pause`, `global-define`, `recid`, `shared` |
+| **Shell / Security** | `shell-call`, `hardcoded-email` |
+| **Find / Performance** | `no-lock-type`, `find-no-error`, `for-each-no-where`, `exclusive-no-wait`, `no-index` |
+| **Style / Convention** | `end-type`, `block-label`, `lex-colon`, `method-name-case`, `class-name-case`, `function-name-case`, `nolonglines` |
+| **Strings / i18n** | `backslash-in-string`, `colon-t`, `string-concat` |
+| **Potential bugs** | `dot-comment`, `return-error`, `weak-char`, `release-statement`, `public-var` (`.cls` only) |
+| **Cross-platform** | `run-backslash`, `include-case`, `include-backslash` |
+| **Misc** | `table-name`, `when-misuse` |
 
 #### Generative
 
