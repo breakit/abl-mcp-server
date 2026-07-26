@@ -1,0 +1,35 @@
+{
+  "name": "@breakit/abl-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for OpenEdge ABL — parse, analyze, scaffold, and query ABL projects",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "abl-mcp-server": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@breakit/abl-mcp-core": "^0.1.0",
+    "@breakit/abl-mcp-generators": "^0.1.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0",
+    "@types/node": "^22.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/breakit/abl-mcp-server.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
