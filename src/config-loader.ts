@@ -4,11 +4,9 @@ import type { MCPConfig, LoadedConfig } from './types.js'
 
 const DEFAULT_TOOLS = [
   'read-abl-file', 'query-abl-symbols', 'read-df-file',
-  'resolve-includes', 'list-project-files', 'check-project-config',
-  'analyze-dependencies', 'df-diff', 'find-dead-code', 'abl-lint',
-  'gen-business-entity', 'gen-workflow', 'gen-ccs-layer',
-  'gen-abldoc', 'gen-openapi', 'gen-ablunit-test', 'init-project',
-  'gen-contract-tt', 'gen-contract-ds', 'gen-contract-json-schema', 'gen-contract-typescript',
+  'resolve-includes', 'list-project-files',
+  'analyze-dependencies', 'df-diff', 'find-dead-code',
+  'gen-abldoc', 'gen-ablunit-test',
 ]
 
 function parseYaml(text: string): MCPConfig {

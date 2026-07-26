@@ -36,12 +36,12 @@ tools:
     - read-abl-file
     - query-abl-symbols
     - analyze-dependencies
-    - abl-lint
-    - gen-business-entity
+    - gen-abldoc
+    - gen-ablunit-test
     # ... add any tools you need
   disabled:
-    - gen-ablunit-test        # disable test generation
-    - gen-contract-typescript # disable TS type generation
+    - abl-lint
+    - check-project-config
 ```
 
 All tools are enabled by default. Add names to `disabled` to turn them off, or set `enabled` to a specific subset.
@@ -65,9 +65,13 @@ export default {
 
 Add `my-custom-tool` to your `abl-mcp-server.yaml` enabled list.
 
-## Tools (22 total)
+## Tools (22 total, 10 enabled by default)
 
-### Analytical
+All 22 tools are available but only a curated subset is enabled by default. Enable additional tools via `abl-mcp-server.yaml` (see Pluggable Architecture above).
+
+### Default-enabled
+
+#### Analytical
 
 | Tool | Description |
 |---|---|
@@ -76,33 +80,33 @@ Add `my-custom-tool` to your `abl-mcp-server.yaml` enabled list.
 | `read-df-file` | Parse a `.df` schema — tables, fields, indexes, sequences |
 | `resolve-includes` | Resolve `{include}` paths against the project PROPATH |
 | `list-project-files` | List all `.p`/`.w`/`.cls`/`.i` files in a project |
-| `check-project-config` | Read `abl.toml` config |
 | `analyze-dependencies` | Build a full dependency graph — includes, calls, cycles, orphans |
 | `df-diff` | Compare two `.df` schema files — structured diff |
 | `find-dead-code` | Find unused functions, includes, and preprocessor defines |
-| `abl-lint` | Lint ABL files for coding conventions |
 
-### Generative
+#### Generative
 
 | Tool | Description |
 |---|---|
-| `gen-business-entity` | Generate BE `.cls`, Service, and Controller with ProDataSets and REST annotations |
-| `gen-workflow` | Generate a workflow `.cls` with Execute + step methods, ProDataSet context, and REST annotations |
-| `gen-business-task` | Generate a standalone Business Task `.cls` with ProDataSet input/output and Execute method |
-| `gen-ccs-layer` | Generate the full CCS stack (BE + Service + Controller) |
 | `gen-abldoc` | Generate HTML documentation from ABLDoc comments |
-| `gen-openapi` | Generate OpenAPI 3.0 spec from `@openapi.openedge.export` annotations |
 | `gen-ablunit-test` | Generate ABLUnit test class extending `TestCase` with ProDataSet CRUD tests |
-| `init-project` | Scaffold a new ABL project with directory structure and `abl.toml` |
 
-### Data Contracts
+### Available (disabled by default)
 
-| Tool | Description |
-|---|---|
-| `gen-contract-tt` | Generate temp-table include (`.i`) from schema fields |
-| `gen-contract-ds` | Generate ProDataSet include (`.i`) wrapping the temp-table |
-| `gen-contract-json-schema` | Generate JSON Schema from table/field definition |
-| `gen-contract-typescript` | Generate TypeScript interface from table/field definition |
+| Tool | Category | Description |
+|---|---|---|
+| `check-project-config` | Analytical | Read `abl.toml` config |
+| `abl-lint` | Analytical | Lint ABL files for coding conventions |
+| `gen-business-entity` | Generative | Generate BE `.cls`, Service, and Controller with ProDataSets and REST annotations |
+| `gen-workflow` | Generative | Generate a workflow `.cls` with Execute + step methods, ProDataSet context |
+| `gen-business-task` | Generative | Generate a standalone Business Task `.cls` with ProDataSet input/output |
+| `gen-ccs-layer` | Generative | Generate the full CCS stack (BE + Service + Controller) |
+| `gen-openapi` | Generative | Generate OpenAPI 3.0 spec from `@openapi.openedge.export` annotations |
+| `init-project` | Generative | Scaffold a new ABL project with directory structure and `abl.toml` |
+| `gen-contract-tt` | Data Contract | Generate temp-table include (`.i`) from schema fields |
+| `gen-contract-ds` | Data Contract | Generate ProDataSet include (`.i`) wrapping the temp-table |
+| `gen-contract-json-schema` | Data Contract | Generate JSON Schema from table/field definition |
+| `gen-contract-typescript` | Data Contract | Generate TypeScript interface from table/field definition |
 
 ## Architecture
 

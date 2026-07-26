@@ -13,25 +13,13 @@ tools:
     - read-df-file
     - resolve-includes
     - list-project-files
-    - check-project-config
     - analyze-dependencies
     - df-diff
     - find-dead-code
-    - abl-lint
 
-    # Generative tools — ABL code scaffolding
-    - gen-business-entity
-    - gen-workflow
-    - gen-ccs-layer
+    # Generator tools — documentation and testing only
     - gen-abldoc
-    - gen-openapi
     - gen-ablunit-test
-    - init-project
 
-    # Data contract tools — generate includes, schemas, TypeScript
-    - gen-contract-tt
-    - gen-contract-ds
-    - gen-contract-json-schema
-    - gen-contract-typescript
-
-  disabled: []
+  disabled:
+    - abl-lint
