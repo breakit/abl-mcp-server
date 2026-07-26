@@ -6,6 +6,7 @@ Built on:
 - [`@breakit/abl-mcp-core`](https://github.com/breakit/abl-mcp-core) — ABL parsing, analysis, linting
 - [`@breakit/abl-mcp-generators`](https://github.com/breakit/abl-mcp-generators) — Code scaffolding with REST annotations, ProDataSets, OpenEdge class hierarchy
 - [`@breakit/abl-mcp-contracts`](https://github.com/breakit/abl-mcp-contracts) — Data contract generators (.i, JSON Schema, TypeScript)
+- [`@breakit/abl-mcp-doc`](https://github.com/breakit/abl-mcp-doc) — ABLDoc parsing, doc comment generation, HTML documentation
 
 ## Quick Start
 
@@ -86,11 +87,11 @@ All 24 tools are available but only a curated subset is enabled by default. Enab
 | `df-diff` | Compare two `.df` schema files — structured diff |
 | `find-dead-code` | Find unused functions, includes, and preprocessor defines |
 | `find-annotations` | Find TODO, FIXME, HACK, XXX, NOTE and similar marker comments |
-| `abl-lint` | Lint ABL files for coding conventions (33 rules defined in config.yaml) |
+| `abl-lint` | Lint ABL files for coding conventions (37 rules defined in config.yaml) |
 
 ### Lint Rules
 
-All 33 rules are defined in `config.yaml` (shipped with the server). They are inspired by [Prolint](https://github.com/jcaillon/prolint). To see all active rules: call `abl-lint` with `listRules: true`.
+All 37 rules are defined in `config.yaml` (shipped with the server). They are inspired by [Prolint](https://github.com/jcaillon/prolint). To see all active rules: call `abl-lint` with `listRules: true`.
 
 Customize rules via your project's `abl-mcp-server.yaml`:
 
@@ -129,8 +130,8 @@ lint:
 
 | Tool | Description |
 |---|---|
-| `gen-doc-comment` | Generate a formatted ABLDoc (`/** */`) comment block for classes, methods, functions, or procedures |
-| `gen-abldoc` | Generate HTML documentation from existing ABLDoc comments in a project |
+| `gen-doc-comment` | Generate a formatted ABLDoc (`/** */`) comment block for classes, methods, functions, or procedures (powered by `@breakit/abl-mcp-doc`) |
+| `gen-abldoc` | Generate HTML documentation from existing ABLDoc comments in a project (powered by `@breakit/abl-mcp-doc`) |
 | `gen-ablunit-test` | Generate ABLUnit test class extending `TestCase` with ProDataSet CRUD tests |
 
 ### Available (disabled by default)
@@ -153,24 +154,27 @@ lint:
 
 ```
 abl-mcp-server
-├── config.yaml                # Per-project tool enable/disable config
+├── config.yaml                # Default tool enable/disable + 37 lint rules
 ├── src/
 │   ├── index.ts               # Bootstrap: auto-discovers tools, registers MCP handlers
-│   ├── config-loader.ts       # Load + parse per-project YAML config
+│   ├── config-loader.ts       # Load + parse per-project YAML config (+ project overlay)
 │   ├── types.ts               # ToolModule interface + config types
-│   └── tools/                 # 23 pluggable tool modules (auto-discovered)
+│   └── tools/                 # 24 pluggable tool modules (auto-discovered)
 │       ├── read-abl-file.ts
 │       ├── analyze-dependencies.ts
 │       ├── abl-lint.ts
+│       ├── find-annotations.ts
 │       ├── gen-business-entity.ts
 │       ├── gen-workflow.ts
 │       ├── gen-business-task.ts
-│       ├── gen-contract-ts.ts
+│       ├── gen-doc-comment.ts
+│       ├── gen-abldoc.ts
+│       ├── gen-contract-*.ts
 │       └── ...
-├── abl-mcp-core               # Pure analysis layer
-│   └── analysis/ linting/ contracts/ utilities/
-└── abl-mcp-generators          # Scaffolding templates
-    └── BE, Service, Controller, Workflow, Test, ABLDoc
+├── @breakit/abl-mcp-core      # Pure analysis layer — parsers, analysis, linting
+├── @breakit/abl-mcp-generators # Scaffolding templates — BE, Service, Controller, Workflow
+├── @breakit/abl-mcp-contracts  # Data contract generators — .i, JSON Schema, TypeScript
+└── @breakit/abl-mcp-doc        # Documentation utilities — ABLDoc parser + comment generator
 ```
 
 ## Installation
@@ -224,7 +228,8 @@ npm start
 
 - Lint rules inspired by [Prolint](https://github.com/jcaillon/prolint) by Jurjen Dijkstra and contributors
 - ABL parsing via [tree-sitter-abl](https://github.com/usagi-coffee/tree-sitter-abl)
-- Language server based on [abl-language-server](https://github.com/usagi-coffee/abl-language-server)
+- Language server concepts from [abl-language-server](https://github.com/usagi-coffee/abl-language-server)
+- Naming conventions derived from Progress ABL community standards
 
 ## License
 
