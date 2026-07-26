@@ -10,7 +10,13 @@ import { loadPropath, resolveIncludePath, findProjectFiles } from '@breakit/abl-
 import { loadConfig } from '@breakit/abl-mcp-core'
 import { extractFunctions } from '@breakit/abl-mcp-core'
 import { resolveIncludes } from '@breakit/abl-mcp-core'
-import { scaffoldFullEntity, generateWorkflow, scaffoldCcsLayer, scaffoldProject, scaffoldTest } from '@breakit/abl-mcp-generators'
+import { buildDependencyGraph, formatDependencyGraph } from '@breakit/abl-mcp-core'
+import { diffDfFiles, formatDfDiff } from '@breakit/abl-mcp-core'
+import { findDeadCode, formatDeadCodeReport } from '@breakit/abl-mcp-core'
+import { lintProject, formatLintReport } from '@breakit/abl-mcp-core'
+import { generateOpenApiSpec } from '@breakit/abl-mcp-core'
+import { generateTempTableInclude, generateDataSetInclude, generateJsonSchema, generateTypeScript } from '@breakit/abl-mcp-core'
+import { scaffoldFullEntity, generateWorkflow, scaffoldCcsLayer, scaffoldProject, scaffoldTest, generateAbldocHtml } from '@breakit/abl-mcp-generators'
 
 const server = new Server(
   { name: 'abl-mcp-server', version: '0.1.0' },
@@ -221,6 +227,171 @@ server.setRequestHandler('tools/list', async () => ({
           },
         },
         required: ['name', 'entityName', 'tableName', 'package', 'outputDir'],
+      },
+    },
+    {
+      name: 'analyze-dependencies',
+      description: 'Build a full dependency graph of all ABL files — includes, function calls, cycles, orphans',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          projectRoot: { type: 'string' },
+        },
+        required: ['projectRoot'],
+      },
+    },
+    {
+      name: 'df-diff',
+      description: 'Compare two .df schema files and produce a structured diff',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          oldDfPath: { type: 'string' },
+          newDfPath: { type: 'string' },
+        },
+        required: ['oldDfPath', 'newDfPath'],
+      },
+    },
+    {
+      name: 'find-dead-code',
+      description: 'Find unused functions, includes, and preprocessor defines across the project',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          projectRoot: { type: 'string' },
+        },
+        required: ['projectRoot'],
+      },
+    },
+    {
+      name: 'abl-lint',
+      description: 'Lint ABL files for coding conventions (NO-UNDO, naming, deprecations)',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          projectRoot: { type: 'string' },
+        },
+        required: ['projectRoot'],
+      },
+    },
+    {
+      name: 'gen-openapi',
+      description: 'Generate an OpenAPI 3.0 specification from @openapi.openedge.export annotations',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          projectRoot: { type: 'string' },
+        },
+        required: ['projectRoot'],
+      },
+    },
+    {
+      name: 'gen-abldoc',
+      description: 'Generate HTML documentation from ABLDoc comments in the project',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          projectRoot: { type: 'string' },
+          title: { type: 'string', nullable: true },
+        },
+        required: ['projectRoot'],
+      },
+    },
+    {
+      name: 'gen-contract-tt',
+      description: 'Generate a temp-table include (.i) file from schema fields',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          tableName: { type: 'string', nullable: true },
+          fields: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                dataType: { type: 'string' },
+                extent: { type: 'integer', nullable: true },
+                required: { type: 'boolean', nullable: true },
+                initial: { type: 'string', nullable: true },
+              },
+              required: ['name', 'dataType'],
+            },
+          },
+        },
+        required: ['name', 'fields'],
+      },
+    },
+    {
+      name: 'gen-contract-ds',
+      description: 'Generate a ProDataSet include (.i) file wrapping the temp-table',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          tableName: { type: 'string', nullable: true },
+          fields: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                dataType: { type: 'string' },
+              },
+              required: ['name', 'dataType'],
+            },
+          },
+        },
+        required: ['name', 'fields'],
+      },
+    },
+    {
+      name: 'gen-contract-json-schema',
+      description: 'Generate a JSON Schema from a table/field definition',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          description: { type: 'string', nullable: true },
+          fields: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                dataType: { type: 'string' },
+                required: { type: 'boolean', nullable: true },
+              },
+              required: ['name', 'dataType'],
+            },
+          },
+        },
+        required: ['name', 'fields'],
+      },
+    },
+    {
+      name: 'gen-contract-typescript',
+      description: 'Generate a TypeScript interface from a table/field definition',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          description: { type: 'string', nullable: true },
+          fields: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                dataType: { type: 'string' },
+                required: { type: 'boolean', nullable: true },
+              },
+              required: ['name', 'dataType'],
+            },
+          },
+        },
+        required: ['name', 'fields'],
       },
     },
   ],
@@ -451,6 +622,70 @@ server.setRequestHandler('tools/call', async (request) => {
             text: `📄 ${result.file}\n${result.content}`,
           }],
         }
+      }
+
+      case 'analyze-dependencies': {
+        const { projectRoot } = args as { projectRoot: string }
+        const graph = buildDependencyGraph(projectRoot)
+        return { content: [{ type: 'text', text: formatDependencyGraph(graph) }] }
+      }
+
+      case 'df-diff': {
+        const { oldDfPath, newDfPath } = args as { oldDfPath: string; newDfPath: string }
+        const { readFileSync } = await import('fs')
+        const oldText = readFileSync(oldDfPath, 'utf-8')
+        const newText = readFileSync(newDfPath, 'utf-8')
+        const diff = diffDfFiles(oldText, newText)
+        return { content: [{ type: 'text', text: formatDfDiff(diff) || 'No differences found.' }] }
+      }
+
+      case 'find-dead-code': {
+        const { projectRoot } = args as { projectRoot: string }
+        const graph = buildDependencyGraph(projectRoot)
+        const report = findDeadCode(graph)
+        return { content: [{ type: 'text', text: formatDeadCodeReport(report) }] }
+      }
+
+      case 'abl-lint': {
+        const { projectRoot } = args as { projectRoot: string }
+        const report = lintProject(projectRoot)
+        return { content: [{ type: 'text', text: formatLintReport(report) || 'No issues found.' }] }
+      }
+
+      case 'gen-openapi': {
+        const { projectRoot } = args as { projectRoot: string }
+        const spec = generateOpenApiSpec(projectRoot)
+        return { content: [{ type: 'text', text: spec }] }
+      }
+
+      case 'gen-abldoc': {
+        const a = args as { projectRoot: string; title?: string }
+        const result = generateAbldocHtml(a.projectRoot, a.title)
+        return { content: [{ type: 'text', text: `📄 ${result.file}\n${result.content}` }] }
+      }
+
+      case 'gen-contract-tt': {
+        const a = args as { name: string; tableName?: string; fields: { name: string; dataType: string; extent?: number; required?: boolean; initial?: string }[] }
+        const content = generateTempTableInclude({ name: a.name, tableName: a.tableName, fields: a.fields || [] })
+        return { content: [{ type: 'text', text: content }] }
+      }
+
+      case 'gen-contract-ds': {
+        const a = args as { name: string; tableName?: string; fields: { name: string; dataType: string }[] }
+        const content = generateDataSetInclude({ name: a.name, tableName: a.tableName, fields: a.fields || [] })
+        return { content: [{ type: 'text', text: content }] }
+      }
+
+      case 'gen-contract-json-schema': {
+        const a = args as { name: string; description?: string; fields: { name: string; dataType: string; required?: boolean }[] }
+        const content = generateJsonSchema({ name: a.name, description: a.description, fields: a.fields || [] })
+        return { content: [{ type: 'text', text: content }] }
+      }
+
+      case 'gen-contract-typescript': {
+        const a = args as { name: string; description?: string; fields: { name: string; dataType: string; required?: boolean }[] }
+        const content = generateTypeScript({ name: a.name, description: a.description, fields: a.fields || [] })
+        return { content: [{ type: 'text', text: content }] }
       }
 
       default:
