@@ -3,7 +3,7 @@ import type { ToolModule } from '../types.js'
 
 export default {
   name: 'gen-abldoc',
-  description: 'Generate HTML documentation from ABLDoc comments',
+  description: 'Generate HTML documentation from existing ABLDoc comments in a project',
   inputSchema: { type: 'object', properties: { projectRoot: { type: 'string' }, title: { type: ['string', 'null'] } }, required: ['projectRoot'] },
   category: 'generative',
   handler: async ({ projectRoot, title }: { projectRoot: string; title?: string }) => {

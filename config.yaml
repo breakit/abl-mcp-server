@@ -16,10 +16,11 @@ tools:
     - analyze-dependencies
     - df-diff
     - find-dead-code
+    - abl-lint
 
     # Generator tools — documentation and testing only
+    - gen-doc-comment
     - gen-abldoc
     - gen-ablunit-test
 
-  disabled:
-    - abl-lint
+  disabled: []

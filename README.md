@@ -1,6 +1,6 @@
 # abl-mcp-server
 
-MCP (Model Context Protocol) server for OpenEdge ABL — pluggable tool architecture with per-project YAML configuration. Provides AI assistants with 22 tools to parse, analyze, lint, document, and scaffold ABL projects.
+MCP (Model Context Protocol) server for OpenEdge ABL — pluggable tool architecture with per-project YAML configuration. Provides AI assistants with 23 tools to parse, analyze, lint, document, and scaffold ABL projects.
 
 Built on:
 - [`@breakit/abl-mcp-core`](https://github.com/breakit/abl-mcp-core) — ABL parsing, analysis, linting, data contracts
@@ -36,11 +36,12 @@ tools:
     - read-abl-file
     - query-abl-symbols
     - analyze-dependencies
+    - gen-doc-comment
     - gen-abldoc
     - gen-ablunit-test
+    - abl-lint
     # ... add any tools you need
   disabled:
-    - abl-lint
     - check-project-config
 ```
 
@@ -65,9 +66,9 @@ export default {
 
 Add `my-custom-tool` to your `abl-mcp-server.yaml` enabled list.
 
-## Tools (22 total, 10 enabled by default)
+## Tools (23 total, 12 enabled by default)
 
-All 22 tools are available but only a curated subset is enabled by default. Enable additional tools via `abl-mcp-server.yaml` (see Pluggable Architecture above).
+All 23 tools are available but only a curated subset is enabled by default. Enable additional tools via `abl-mcp-server.yaml` (see Pluggable Architecture above).
 
 ### Default-enabled
 
@@ -83,12 +84,14 @@ All 22 tools are available but only a curated subset is enabled by default. Enab
 | `analyze-dependencies` | Build a full dependency graph — includes, calls, cycles, orphans |
 | `df-diff` | Compare two `.df` schema files — structured diff |
 | `find-dead-code` | Find unused functions, includes, and preprocessor defines |
+| `abl-lint` | Lint ABL files for coding conventions |
 
 #### Generative
 
 | Tool | Description |
 |---|---|
-| `gen-abldoc` | Generate HTML documentation from ABLDoc comments |
+| `gen-doc-comment` | Generate a formatted ABLDoc (`/** */`) comment block for classes, methods, functions, or procedures |
+| `gen-abldoc` | Generate HTML documentation from existing ABLDoc comments in a project |
 | `gen-ablunit-test` | Generate ABLUnit test class extending `TestCase` with ProDataSet CRUD tests |
 
 ### Available (disabled by default)
@@ -96,7 +99,6 @@ All 22 tools are available but only a curated subset is enabled by default. Enab
 | Tool | Category | Description |
 |---|---|---|
 | `check-project-config` | Analytical | Read `abl.toml` config |
-| `abl-lint` | Analytical | Lint ABL files for coding conventions |
 | `gen-business-entity` | Generative | Generate BE `.cls`, Service, and Controller with ProDataSets and REST annotations |
 | `gen-workflow` | Generative | Generate a workflow `.cls` with Execute + step methods, ProDataSet context |
 | `gen-business-task` | Generative | Generate a standalone Business Task `.cls` with ProDataSet input/output |
@@ -117,7 +119,7 @@ abl-mcp-server
 │   ├── index.ts               # Bootstrap: auto-discovers tools, registers MCP handlers
 │   ├── config-loader.ts       # Load + parse per-project YAML config
 │   ├── types.ts               # ToolModule interface + config types
-│   └── tools/                 # 22 pluggable tool modules (auto-discovered)
+│   └── tools/                 # 23 pluggable tool modules (auto-discovered)
 │       ├── read-abl-file.ts
 │       ├── analyze-dependencies.ts
 │       ├── abl-lint.ts

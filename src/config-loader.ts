@@ -5,8 +5,8 @@ import type { MCPConfig, LoadedConfig } from './types.js'
 const DEFAULT_TOOLS = [
   'read-abl-file', 'query-abl-symbols', 'read-df-file',
   'resolve-includes', 'list-project-files',
-  'analyze-dependencies', 'df-diff', 'find-dead-code',
-  'gen-abldoc', 'gen-ablunit-test',
+  'analyze-dependencies', 'df-diff', 'find-dead-code', 'abl-lint',
+  'gen-doc-comment', 'gen-abldoc', 'gen-ablunit-test',
 ]
 
 function parseYaml(text: string): MCPConfig {
