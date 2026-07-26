@@ -218,6 +218,12 @@ npm run build
 npm start
 ```
 
+## Acknowledgments
+
+- Lint rules inspired by [Prolint](https://github.com/jcaillon/prolint) by Jurjen Dijkstra and contributors
+- ABL parsing via [tree-sitter-abl](https://github.com/usagi-coffee/tree-sitter-abl)
+- Language server based on [abl-language-server](https://github.com/usagi-coffee/abl-language-server)
+
 ## License
 
 MIT
