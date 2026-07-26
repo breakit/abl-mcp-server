@@ -1,10 +1,10 @@
-import { lintProject, formatLintReport, getBuiltInRules, type LintRuleSpec } from '@breakit/abl-mcp-core'
+import { lintProject, formatLintReport, type LintRuleSpec } from '@breakit/abl-mcp-core'
 import { loadConfig } from '../config-loader.js'
 import type { ToolModule } from '../types.js'
 
 export default {
   name: 'abl-lint',
-  description: 'Lint ABL files for coding conventions (NO-UNDO, naming, deprecations, ~30 Prolint-inspired rules)',
+  description: 'Lint ABL files using 33 Prolint-inspired rules defined in config.yaml',
   inputSchema: {
     type: 'object',
     properties: {
@@ -30,22 +30,11 @@ export default {
   category: 'analytical',
   handler: async (args: Record<string, unknown>) => {
     const projectRoot = args.projectRoot as string
-    const listRules = args.listRules as boolean | undefined
 
-    if (listRules) {
-      const builtIn = getBuiltInRules()
-      const lines: string[] = ['Built-in rules (use these names in abl-mcp-server.yaml to override):']
-      for (const [name, spec] of Object.entries(builtIn)) {
-        lines.push(`  ${name}  [${spec.severity}] ${spec.message}`)
-      }
-      return { content: [{ type: 'text', text: lines.join('\n') }] }
-    }
-
-    // Load YAML config for per-project rules
+    // Load config — server defaults + project overrides
     const config = loadConfig(projectRoot)
-    const yamlRules: Record<string, LintRuleSpec> = config.lintRules || {}
 
-    // Parse inline rules from tool args
+    // Parse inline rules from tool args (highest priority)
     const inlineRules: Record<string, LintRuleSpec> = {}
     for (const r of (args.rules || []) as { name: string; pattern: string; message: string; severity?: string; filePattern?: string }[]) {
       inlineRules[r.name] = {
@@ -56,10 +45,21 @@ export default {
       }
     }
 
-    // Merge: inline rules override YAML rules
-    const extraRules = { ...yamlRules, ...inlineRules }
+    // Merge: config defaults < project overrides < inline rules
+    const rules: Record<string, LintRuleSpec> = { ...config.lintRules, ...inlineRules }
 
-    const report = lintProject(projectRoot, Object.keys(extraRules).length > 0 ? extraRules : undefined)
+    if (args.listRules) {
+      const lines: string[] = [`Lint rules loaded: ${Object.keys(rules).length}`]
+      for (const [name, spec] of Object.entries(rules)) {
+        const pattern = spec.pattern || '(special)'
+        const fp = spec.filePattern ? ` [${spec.filePattern}]` : ''
+        lines.push(`  ${name}  [${spec.severity}]${fp}  ${spec.message}`)
+      }
+      lines.push('', 'To override: add a lint.rules section to your abl-mcp-server.yaml')
+      return { content: [{ type: 'text', text: lines.join('\n') }] }
+    }
+
+    const report = lintProject(projectRoot, rules)
     return { content: [{ type: 'text', text: formatLintReport(report) }] }
   },
 } satisfies ToolModule

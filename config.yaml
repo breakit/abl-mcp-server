@@ -1,9 +1,6 @@
 # ABL MCP Server configuration
-# Place in your ABL project root: ./abl-mcp-server.yaml
-#
-# Tools are grouped by category.
-# All tools are enabled by default.
-# To disable a tool, add it to the disabled list.
+# This file ships with the server and defines defaults.
+# Override per-project with ./abl-mcp-server.yaml
 
 tools:
   enabled:
@@ -25,23 +22,192 @@ tools:
 
   disabled: []
 
-# Lint rules — override built-in rules or add custom ones
-# Built-in rules: no-undo, no-undo-param, pause, global-define, recid, shared,
-#   shell-call, hardcoded-email, no-lock-type, find-no-error, for-each-no-where,
-#   exclusive-no-wait, no-index, end-type, block-label, lex-colon, method-name-case,
-#   class-name-case, function-name-case, backslash-in-string, colon-t, string-concat,
-#   dot-comment, return-error, weak-char, release-statement, public-var, nolonglines,
-#   run-backslash, include-case, include-backslash, table-name, when-misuse
+# Lint rules — all 33 built-in rules are defined here.
+# Override severity or add custom rules in your project's abl-mcp-server.yaml.
 lint:
   rules:
-    # Example: add a custom rule
-    # my-naming-rule:
-    #   pattern: '^\\s*PROCEDURE\\s+[a-z]'
-    #   message: 'Procedure names should start with uppercase'
-    #   severity: warning
 
-    # Example: override severity of a built-in rule
-    # no-undo:
-    #   pattern: '^DEFINE (?:VARIABLE|VAR) ...'
-    #   message: 'DEFINE VARIABLE should include NO-UNDO'
-    #   severity: warning      # downgrade from error to warning
+    # ---- No-undo / Lock safety ----
+
+    no-undo:
+      pattern: '^DEFINE (?:VARIABLE|VAR) +(?:OUTPUT +PARAMETER +)?\w+ (?:AS \w+ )?(?!.*NO-UNDO)'
+      message: 'DEFINE VARIABLE should include NO-UNDO'
+      severity: error
+
+    no-undo-param:
+      pattern: '^DEFINE INPUT(?:\-OUTPUT)? PARAMETER +\w+ (?:AS \w+ )?(?!.*NO-UNDO)'
+      message: 'DEFINE PARAMETER should include NO-UNDO'
+      severity: error
+
+    # ---- Deprecations / Obsolete ----
+
+    pause:
+      pattern: 'PAUSE\b'
+      message: 'PAUSE is deprecated — use MESSAGE VIEW-AS ALERT-BOX instead'
+      severity: warning
+
+    global-define:
+      pattern: '&GLOBAL-DEFINE'
+      message: 'Use &SCOPED-DEFINE instead of &GLOBAL-DEFINE'
+      severity: warning
+
+    recid:
+      pattern: '\bRECID\b'
+      message: 'RECID is obsolete since OE10 — use ROWID instead'
+      severity: error
+
+    shared:
+      pattern: '\bSHARED\b'
+      message: 'SHARED variables are discouraged — pass parameters or use temp-tables'
+      severity: warning
+
+    # ---- Shell / security ----
+
+    shell-call:
+      pattern: '\b(OS-COMMAND|UNIX SILENT|DOS SILENT|INPUT THROUGH|OUTPUT THROUGH|INPUT-OUTPUT THROUGH)\b'
+      message: 'Shell calls should be avoided in PAS for OpenEdge contexts'
+      severity: warning
+
+    hardcoded-email:
+      pattern: '"[^"]*\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b[^"]*"'
+      message: 'Hardcoded email addresses should be stored in configuration'
+      severity: warning
+
+    # ---- Find / Lock / Performance ----
+
+    no-lock-type:
+      pattern: '\bFIND +(?:FIRST|LAST|NEXT|PREV|UNIQUE|CURRENT) +\w+\b(?!.*\b(NO-LOCK|EXCLUSIVE-LOCK|SHARE-LOCK)\b)'
+      message: 'FIND without explicit lock type — add NO-LOCK or EXCLUSIVE-LOCK'
+      severity: warning
+
+    find-no-error:
+      pattern: '\b(?:FIND|FOR +(?:EACH|FIRST|LAST))\b(?!.*\bNO-ERROR\b)'
+      message: 'FIND/FOR-EACH without NO-ERROR — statement may fail silently'
+      severity: warning
+
+    for-each-no-where:
+      pattern: '\bFOR +EACH +\w+\b(?!.*\bWHERE\b)'
+      message: 'FOR EACH without WHERE clause — full table scan'
+      severity: warning
+
+    exclusive-no-wait:
+      pattern: '\bEXCLUSIVE-LOCK\b(?!.*\b(NO-WAIT|WAIT)\b)'
+      message: 'EXCLUSIVE-LOCK without NO-WAIT may cause deadlocks'
+      severity: error
+
+    no-index:
+      pattern: '\b(?:FOR +EACH +\w+ +NO-LOCK +USE-INDEX)\b'
+      message: 'USE-INDEX overrides the compiler optimizer — remove unless justified'
+      severity: warning
+
+    # ---- Style / Conventions ----
+
+    end-type:
+      pattern: '^\s*END\.(?!\s)'
+      message: 'END without type qualification — prefer END PROCEDURE / END FUNCTION / END DO'
+      severity: warning
+
+    block-label:
+      pattern: '^\s*(?:LEAVE|NEXT)\s*\.?\s*$'
+      message: 'LEAVE/NEXT without block label — specify which block to leave'
+      severity: warning
+
+    lex-colon:
+      pattern: '^\s*(?:DO|FOR +EACH +\w+[^:]*|WHILE +[^:]+|REPEAT)\s*$'
+      message: 'Block header should end with colon (e.g. DO: instead of DO)'
+      severity: warning
+
+    method-name-case:
+      pattern: '^\s*METHOD +(?:PUBLIC|PROTECTED|PRIVATE|STATIC )*(?:HANDLE|LOGICAL|CHARACTER|VOID|INTEGER|DECIMAL|LONGCHAR|DATE|DATETIME )*[a-z]\w*\s*\('
+      message: 'Method names should start with uppercase'
+      severity: warning
+      filePattern: '*.cls'
+
+    class-name-case:
+      pattern: '^\s*CLASS +\S*?\b[a-z]\w+\b'
+      message: 'Class names should start with uppercase'
+      severity: warning
+      filePattern: '*.cls'
+
+    function-name-case:
+      pattern: '^\s*FUNCTION +[A-Z]\w+\s+'
+      message: 'Function names should start with lowercase'
+      severity: warning
+
+    # ---- Strings / i18n ----
+
+    backslash-in-string:
+      pattern: '"[^~"\n]*\\'
+      message: 'Backslash in string without ~ prefix — use ~\\ for escaped backslash'
+      severity: error
+
+    colon-t:
+      pattern: ':\s*T\b'
+      message: ':T attribute returns trimmed string — verify this is intentional'
+      severity: warning
+
+    string-concat:
+      pattern: '"[^"\n]{10,}"\s*\+'
+      message: 'String concatenation — consider using SUBSTITUTE() for readability'
+      severity: warning
+
+    # ---- Potential bugs ----
+
+    dot-comment:
+      pattern: '\.\s*/\*'
+      message: 'Period followed by comment — may unintentionally terminate a statement'
+      severity: error
+
+    return-error:
+      pattern: '\bRETURN +ERROR\s*\.'
+      message: 'RETURN ERROR without string argument — add a descriptive error message'
+      severity: error
+
+    weak-char:
+      pattern: '[^:]=\s*""'
+      message: 'Empty string comparison — use ? or a specific value for clarity'
+      severity: warning
+
+    release-statement:
+      pattern: '\bRELEASE +\w+\b'
+      message: 'RELEASE of buffer is rarely needed and may indicate confusion with delete'
+      severity: warning
+
+    public-var:
+      pattern: '\bDEFINE +(?:PUBLIC )?VARIABLE\b'
+      message: 'Public variable in class — use properties instead'
+      severity: warning
+      filePattern: '*.cls'
+
+    nolonglines:
+      message: 'Line exceeds 80 characters'
+      severity: warning
+
+    # ---- Cross-platform ----
+
+    run-backslash:
+      pattern: '\bRUN +\S*\\'
+      message: 'RUN path uses backslash — use forward-slash for Unix compatibility'
+      severity: warning
+
+    include-case:
+      pattern: '\{[^}]*(?=[A-Z])[^}]*\}'
+      message: 'Include reference uses mixed case — lower-case for cross-platform compatibility'
+      severity: warning
+
+    include-backslash:
+      pattern: '\{[^}]*\\[^}]*\}'
+      message: 'Include path uses backslash — use forward-slash for Unix compatibility'
+      severity: warning
+
+    # ---- Misc ----
+
+    table-name:
+      pattern: '\bLIKE +[a-z]\w*\b'
+      message: 'LIKE table name should be uppercase (by convention)'
+      severity: warning
+
+    when-misuse:
+      pattern: '\bASSIGN\s+\S+\s*=\s*\S+\s+WHEN\s'
+      message: 'ASSIGN...WHEN usage may be confusing — use IF/THEN instead'
+      severity: warning
