@@ -9,7 +9,7 @@ const SERVER_CONFIG = resolve(__dirname, '..', 'config.yaml')
 const DEFAULT_TOOLS = [
   'read-abl-file', 'query-abl-symbols', 'read-df-file',
   'resolve-includes', 'list-project-files',
-  'analyze-dependencies', 'df-diff', 'find-dead-code', 'abl-lint',
+  'analyze-dependencies', 'df-diff', 'find-dead-code', 'find-annotations', 'abl-lint',
   'gen-doc-comment', 'gen-abldoc', 'gen-ablunit-test',
 ]
 

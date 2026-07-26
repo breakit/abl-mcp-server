@@ -13,6 +13,7 @@ tools:
     - analyze-dependencies
     - df-diff
     - find-dead-code
+    - find-annotations
     - abl-lint
 
     # Generator tools — documentation and testing only

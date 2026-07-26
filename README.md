@@ -1,6 +1,6 @@
 # abl-mcp-server
 
-MCP (Model Context Protocol) server for OpenEdge ABL — pluggable tool architecture with per-project YAML configuration. Provides AI assistants with 23 tools to parse, analyze, lint, document, and scaffold ABL projects.
+MCP (Model Context Protocol) server for OpenEdge ABL — pluggable tool architecture with per-project YAML configuration. Provides AI assistants with 24 tools to parse, analyze, lint, document, and scaffold ABL projects.
 
 Built on:
 - [`@breakit/abl-mcp-core`](https://github.com/breakit/abl-mcp-core) — ABL parsing, analysis, linting, data contracts
@@ -66,9 +66,9 @@ export default {
 
 Add `my-custom-tool` to your `abl-mcp-server.yaml` enabled list.
 
-## Tools (23 total, 12 enabled by default)
+## Tools (24 total, 13 enabled by default)
 
-All 23 tools are available but only a curated subset is enabled by default. Enable additional tools via `abl-mcp-server.yaml` (see Pluggable Architecture above).
+All 24 tools are available but only a curated subset is enabled by default. Enable additional tools via `abl-mcp-server.yaml` (see Pluggable Architecture above).
 
 ### Default-enabled
 
@@ -84,6 +84,7 @@ All 23 tools are available but only a curated subset is enabled by default. Enab
 | `analyze-dependencies` | Build a full dependency graph — includes, calls, cycles, orphans |
 | `df-diff` | Compare two `.df` schema files — structured diff |
 | `find-dead-code` | Find unused functions, includes, and preprocessor defines |
+| `find-annotations` | Find TODO, FIXME, HACK, XXX, NOTE and similar marker comments |
 | `abl-lint` | Lint ABL files for coding conventions (33 rules defined in config.yaml) |
 
 ### Lint Rules
