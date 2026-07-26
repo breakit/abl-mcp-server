@@ -1,14 +1,14 @@
 {
   "name": "@breakit/abl-mcp-server",
-  "version": "0.1.0",
-  "description": "MCP server for OpenEdge ABL — parse, analyze, scaffold, and query ABL projects",
+  "version": "0.2.0",
+  "description": "MCP server for OpenEdge ABL — pluggable tool architecture with per-project YAML config",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "abl-mcp-server": "./dist/index.js"
   },
-  "files": ["dist"],
+  "files": ["dist", "config.yaml"],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
@@ -17,8 +17,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@breakit/abl-mcp-core": "^0.1.0",
-    "@breakit/abl-mcp-generators": "^0.1.0",
-    "zod": "^3.24.0"
+    "@breakit/abl-mcp-generators": "^0.1.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

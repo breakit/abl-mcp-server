@@ -1,0 +1,37 @@
+# ABL MCP Server configuration
+# Place in your ABL project root: ./abl-mcp-server.yaml
+#
+# Tools are grouped by category.
+# All tools are enabled by default.
+# To disable a tool, add it to the disabled list.
+
+tools:
+  enabled:
+    # Analytical tools — ABL code understanding
+    - read-abl-file
+    - query-abl-symbols
+    - read-df-file
+    - resolve-includes
+    - list-project-files
+    - check-project-config
+    - analyze-dependencies
+    - df-diff
+    - find-dead-code
+    - abl-lint
+
+    # Generative tools — ABL code scaffolding
+    - gen-business-entity
+    - gen-workflow
+    - gen-ccs-layer
+    - gen-abldoc
+    - gen-openapi
+    - gen-ablunit-test
+    - init-project
+
+    # Data contract tools — generate includes, schemas, TypeScript
+    - gen-contract-tt
+    - gen-contract-ds
+    - gen-contract-json-schema
+    - gen-contract-typescript
+
+  disabled: []
