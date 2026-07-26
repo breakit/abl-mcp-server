@@ -122,6 +122,7 @@ lint:
 | **Potential bugs** | `dot-comment`, `return-error`, `weak-char`, `release-statement`, `public-var` (`.cls` only) |
 | **Cross-platform** | `run-backslash`, `include-case`, `include-backslash` |
 | **Misc** | `table-name`, `when-misuse` |
+| **Naming** | `naming-tt`, `naming-ds`, `naming-var`, `naming-param` |
 
 #### Generative
 

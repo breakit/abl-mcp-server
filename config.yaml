@@ -201,6 +201,28 @@ lint:
       message: 'Include path uses backslash — use forward-slash for Unix compatibility'
       severity: warning
 
+    # ---- Naming conventions ----
+
+    naming-tt:
+      pattern: '\bdefine\s+temp-table\s+(?![glucio]+-\w+(?:-\w+)*-tt\b)\w+'
+      message: 'Temp-table names should follow prefix-name-tt convention (e.g. l-customer-tt)'
+      severity: warning
+
+    naming-ds:
+      pattern: '\bdefine\s+dataset\s+(?![glucio]+-\w+(?:-\w+)*-ds\b)\w+'
+      message: 'Dataset names should follow prefix-name-ds convention (e.g. l-customer-ds)'
+      severity: warning
+
+    naming-var:
+      pattern: '\bdefine\s+variable\s+(?![glucio]+-\w+(?:-\w+)*-(h|i|d|c|de|l|da|o)\b)\w+'
+      message: 'Variable names should follow prefix-name-type convention (e.g. l-buffer-h, l-count-i)'
+      severity: warning
+
+    naming-param:
+      pattern: '\bdefine\s+(?:input|output|input-output)\s+parameter\s+(?![glucio]+-\w+)\w+'
+      message: 'Parameter names should follow prefix convention (e.g. i-id-c, o-result-l)'
+      severity: warning
+
     # ---- Misc ----
 
     table-name:
