@@ -1,4 +1,4 @@
-import { generateDataSetInclude } from '@breakit/abl-mcp-core'
+import { generateDataSetInclude } from '@breakit/abl-mcp-contracts'
 import type { ToolModule } from '../types.js'
 
 export default {

@@ -3,8 +3,9 @@
 MCP (Model Context Protocol) server for OpenEdge ABL — pluggable tool architecture with per-project YAML configuration. Provides AI assistants with 24 tools to parse, analyze, lint, document, and scaffold ABL projects.
 
 Built on:
-- [`@breakit/abl-mcp-core`](https://github.com/breakit/abl-mcp-core) — ABL parsing, analysis, linting, data contracts
+- [`@breakit/abl-mcp-core`](https://github.com/breakit/abl-mcp-core) — ABL parsing, analysis, linting
 - [`@breakit/abl-mcp-generators`](https://github.com/breakit/abl-mcp-generators) — Code scaffolding with REST annotations, ProDataSets, OpenEdge class hierarchy
+- [`@breakit/abl-mcp-contracts`](https://github.com/breakit/abl-mcp-contracts) — Data contract generators (.i, JSON Schema, TypeScript)
 
 ## Quick Start
 
