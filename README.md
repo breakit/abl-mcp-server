@@ -39,9 +39,10 @@ Or add to opencode config:
 
 | Tool | Description |
 |---|---|
-| `gen-business-entity` | Generate BE `.cls`, Service, and Controller for an entity |
+| `gen-business-entity` | Generate BE `.cls`, Service, and Controller for an entity (ProDataSet, REST annotations) |
 | `gen-workflow` | Generate a workflow `.p` with steps and transitions |
 | `gen-ccs-layer` | Generate the full CCS stack (BE + Service + Controller) |
+| `gen-ablunit-test` | Generate an ABLUnit test class extending `TestCase` with ProDataSet CRUD tests |
 | `init-project` | Scaffold a new ABL project with directory structure and `abl.toml` |
 
 ## Architecture
@@ -50,6 +51,11 @@ Or add to opencode config:
 abl-mcp-server          # Thin MCP server (this repo)
   ├── abl-mcp-core      # Pure analysis layer
   └── abl-mcp-generators # Scaffolding templates and generators
+                          #   - OpenEdge.BusinessLogic.BusinessEntity
+                          #   - OpenEdge.Web.WebHandler
+                          #   - OpenEdge.ABLUnit.TestCase
+                          #   - REST annotations (@openapi.openedge.export)
+                          #   - ProDataSet-based data exchange
 ```
 
 ## Running

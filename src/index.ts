@@ -10,7 +10,7 @@ import { loadPropath, resolveIncludePath, findProjectFiles } from '@breakit/abl-
 import { loadConfig } from '@breakit/abl-mcp-core'
 import { extractFunctions } from '@breakit/abl-mcp-core'
 import { resolveIncludes } from '@breakit/abl-mcp-core'
-import { scaffoldFullEntity, generateWorkflow, scaffoldCcsLayer, scaffoldProject } from '@breakit/abl-mcp-generators'
+import { scaffoldFullEntity, generateWorkflow, scaffoldCcsLayer, scaffoldProject, scaffoldTest } from '@breakit/abl-mcp-generators'
 
 const server = new Server(
   { name: 'abl-mcp-server', version: '0.1.0' },
@@ -180,6 +180,33 @@ server.setRequestHandler('tools/list', async () => ({
           outputDir: { type: 'string' },
         },
         required: ['name', 'package', 'outputDir'],
+      },
+    },
+    {
+      name: 'gen-ablunit-test',
+      description: 'Generate an ABLUnit test class extending TestCase with ProDataSet-driven CRUD tests',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', description: 'Entity name (e.g. "Customer")' },
+          entityName: { type: 'string', description: 'Business entity class name' },
+          tableName: { type: 'string' },
+          package: { type: 'string' },
+          outputDir: { type: 'string' },
+          fields: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                dataType: { type: 'string' },
+                initial: { type: 'string', nullable: true },
+              },
+              required: ['name', 'dataType'],
+            },
+          },
+        },
+        required: ['name', 'entityName', 'tableName', 'package', 'outputDir'],
       },
     },
   ],
@@ -379,6 +406,31 @@ server.setRequestHandler('tools/call', async (request) => {
           content: [{
             type: 'text',
             text: files.map(f => `📄 ${f.path}\n${f.content}`).join('\n---\n'),
+          }],
+        }
+      }
+
+      case 'gen-ablunit-test': {
+        const a = args as {
+          name: string
+          entityName: string
+          tableName: string
+          package: string
+          outputDir: string
+          fields?: { name: string; dataType: string; initial?: string }[]
+        }
+        const result = scaffoldTest({
+          name: a.name,
+          entityName: a.entityName,
+          tableName: a.tableName,
+          package: a.package,
+          fields: (a.fields || []).map(f => ({ name: f.name, dataType: f.dataType, initial: f.initial })),
+          outputDir: a.outputDir,
+        })
+        return {
+          content: [{
+            type: 'text',
+            text: `📄 ${result.file}\n${result.content}`,
           }],
         }
       }
