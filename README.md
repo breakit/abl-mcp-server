@@ -1,6 +1,6 @@
 # abl-mcp-server
 
-MCP (Model Context Protocol) server for OpenEdge ABL — pluggable tool architecture with per-project YAML configuration. Provides AI assistants with 21 tools to parse, analyze, lint, document, and scaffold ABL projects.
+MCP (Model Context Protocol) server for OpenEdge ABL — pluggable tool architecture with per-project YAML configuration. Provides AI assistants with 22 tools to parse, analyze, lint, document, and scaffold ABL projects.
 
 Built on:
 - [`@breakit/abl-mcp-core`](https://github.com/breakit/abl-mcp-core) — ABL parsing, analysis, linting, data contracts
@@ -65,7 +65,7 @@ export default {
 
 Add `my-custom-tool` to your `abl-mcp-server.yaml` enabled list.
 
-## Tools (21 total)
+## Tools (22 total)
 
 ### Analytical
 
@@ -87,7 +87,8 @@ Add `my-custom-tool` to your `abl-mcp-server.yaml` enabled list.
 | Tool | Description |
 |---|---|
 | `gen-business-entity` | Generate BE `.cls`, Service, and Controller with ProDataSets and REST annotations |
-| `gen-workflow` | Generate a workflow `.p` with ProDataSet context and steps |
+| `gen-workflow` | Generate a workflow `.cls` with Execute + step methods, ProDataSet context, and REST annotations |
+| `gen-business-task` | Generate a standalone Business Task `.cls` with ProDataSet input/output and Execute method |
 | `gen-ccs-layer` | Generate the full CCS stack (BE + Service + Controller) |
 | `gen-abldoc` | Generate HTML documentation from ABLDoc comments |
 | `gen-openapi` | Generate OpenAPI 3.0 spec from `@openapi.openedge.export` annotations |
@@ -112,12 +113,13 @@ abl-mcp-server
 │   ├── index.ts               # Bootstrap: auto-discovers tools, registers MCP handlers
 │   ├── config-loader.ts       # Load + parse per-project YAML config
 │   ├── types.ts               # ToolModule interface + config types
-│   └── tools/                 # 21 pluggable tool modules (auto-discovered)
+│   └── tools/                 # 22 pluggable tool modules (auto-discovered)
 │       ├── read-abl-file.ts
 │       ├── analyze-dependencies.ts
 │       ├── abl-lint.ts
 │       ├── gen-business-entity.ts
 │       ├── gen-workflow.ts
+│       ├── gen-business-task.ts
 │       ├── gen-contract-ts.ts
 │       └── ...
 ├── abl-mcp-core               # Pure analysis layer
