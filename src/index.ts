@@ -121,13 +121,26 @@ server.setRequestHandler('tools/list', async () => ({
     },
     {
       name: 'gen-workflow',
-      description: 'Generate a workflow \\.p file with steps and transitions',
+      description: 'Generate a workflow .p file with ProDataSet context, steps, and optional entity payload',
       inputSchema: {
         type: 'object',
         properties: {
           name: { type: 'string' },
-          description: { type: 'string' },
+          description: { type: 'string', nullable: true },
           initialStatus: { type: 'string', default: 'pending' },
+          payloadTable: { type: 'string', nullable: true, description: 'Database table name for entity payload ProDataSet' },
+          contextFields: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                dataType: { type: 'string' },
+                initial: { type: 'string', nullable: true },
+              },
+              required: ['name', 'dataType'],
+            },
+          },
           steps: {
             type: 'array',
             items: {
@@ -135,6 +148,7 @@ server.setRequestHandler('tools/list', async () => ({
               properties: {
                 name: { type: 'string' },
                 nextStep: { type: 'string', nullable: true },
+                nextStatus: { type: 'string', nullable: true },
               },
               required: ['name'],
             },
@@ -355,12 +369,16 @@ server.setRequestHandler('tools/call', async (request) => {
           name: string
           description?: string
           initialStatus?: string
-          steps: { name: string; nextStep?: string }[]
+          payloadTable?: string
+          contextFields?: { name: string; dataType: string; initial?: string }[]
+          steps: { name: string; nextStep?: string; nextStatus?: string }[]
         }
         const content = generateWorkflow({
           name: a.name,
           description: a.description,
           initialStatus: a.initialStatus || 'pending',
+          payloadTable: a.payloadTable,
+          contextFields: a.contextFields || [],
           steps: a.steps,
         })
         return {
