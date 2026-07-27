@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { readdirSync } from 'fs'
 import { join, dirname } from 'path'
@@ -18,7 +19,7 @@ async function discoverTools(): Promise<ToolModule[]> {
   try {
     const entries = readdirSync(toolDir)
     for (const entry of entries) {
-      if (!entry.endsWith('.ts') && !entry.endsWith('.js')) continue
+      if (!entry.endsWith('.js')) continue
       const path = join(toolDir, entry)
       const mod = await import(path)
       const tool = mod.default as ToolModule
@@ -46,7 +47,7 @@ async function main() {
     { capabilities: { tools: {} } },
   )
 
-  server.setRequestHandler('tools/list', async () => ({
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: tools.map(t => ({
       name: t.name,
       description: t.description,
@@ -54,15 +55,16 @@ async function main() {
     })),
   }))
 
-  server.setRequestHandler('tools/call', async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params
     const tool = tools.find(t => t.name === name)
     if (!tool) throw new Error(`Unknown tool: ${name}`)
 
     try {
-      return await tool.handler(args)
+      return await tool.handler(args ?? {})
     } catch (err) {
       return {
+        isError: true,
         content: [{
           type: 'text',
           text: `Error: ${err instanceof Error ? err.message : String(err)}`,

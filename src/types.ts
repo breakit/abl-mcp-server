@@ -1,14 +1,24 @@
 import type { LintRuleSpec } from '@breakit/abl-mcp-core'
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
+
+export interface ToolContent {
+  type: 'text'
+  text: string
+}
+
+export type ToolResponse = CallToolResult
+
+export interface ToolInputSchema {
+  type: 'object'
+  properties: Record<string, unknown>
+  required?: string[]
+}
 
 export interface ToolModule {
   name: string
   description: string
-  inputSchema: {
-    type: string
-    properties: Record<string, unknown>
-    required?: string[]
-  }
-  handler: (args: Record<string, unknown>) => Promise<{ content: { type: string; text: string }[] }>
+  inputSchema: ToolInputSchema
+  handler: (args: any) => Promise<ToolResponse>
   category?: 'analytical' | 'generative'
 }
 

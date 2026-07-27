@@ -2,6 +2,15 @@ import { initAblParser, parseAblFile } from '@breakit/abl-mcp-core'
 import { readFileSync, existsSync } from 'fs'
 import type { ToolModule } from '../types.js'
 
+function formatFunctionSignature(name: string, parameters: { name: string; direction: string; dataType: string | null }[]): string {
+  const params = parameters.map((parameter) => {
+    const dataType = parameter.dataType ? ` ${parameter.dataType}` : ''
+    return `${parameter.direction} ${parameter.name}${dataType}`
+  })
+
+  return `${name}(${params.join(', ')})`
+}
+
 export default {
   name: 'read-abl-file',
   description: 'Parse an ABL file and return its structure (functions, includes, preprocessor defines)',
@@ -20,7 +29,7 @@ export default {
         type: 'text',
         text: [
           `Functions (${result.functions.length}):`,
-          ...result.functions.map(f => `  ${f.signature} (line ${f.startLine + 1}-${f.endLine + 1})`),
+          ...result.functions.map(f => `  ${formatFunctionSignature(f.name, f.parameters)} (line ${f.startLine + 1}-${f.endLine + 1})`),
           '', `Includes (${result.includes.length}):`,
           ...result.includes.map(i => `  ${i.path} (line ${i.line + 1})`),
           '', `Preprocessor defines (${result.preprocessorDefines.length}):`,

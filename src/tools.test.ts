@@ -1,3 +1,4 @@
+import type { ToolModule, ToolResponse } from './types.js'
 import { describe, it, expect } from 'vitest'
 
 // Import each tool and test its handler produces valid MCP output format
@@ -17,20 +18,16 @@ import genAbldoc from './tools/gen-abldoc.js'
 import genAblunitTest from './tools/gen-ablunit-test.js'
 import genOpenapi from './tools/gen-openapi.js'
 
-type ToolModule = {
-  name: string
-  description: string
-  inputSchema: { type: string; properties: Record<string, unknown>; required?: string[] }
-  category?: string
-  handler: (args: Record<string, unknown>) => Promise<{ content: { type: string; text: string }[] }>
-}
-
-function isValidMCPResponse(result: { content: { type: string; text: string }[] }) {
+function isValidMCPResponse(result: ToolResponse) {
   expect(result).toBeDefined()
   expect(Array.isArray(result.content)).toBe(true)
   expect(result.content.length).toBeGreaterThan(0)
-  expect(result.content[0].type).toBe('text')
-  expect(typeof result.content[0].text).toBe('string')
+  const first = result.content[0]
+  expect(first.type).toBe('text')
+  if (first.type !== 'text') {
+    throw new Error(`Expected first content block to be text, got ${first.type}`)
+  }
+  expect(typeof first.text).toBe('string')
 }
 
 const tools: ToolModule[] = [
@@ -64,9 +61,13 @@ describe('read-abl-file', () => {
   })
 
   it('returns error when no filePath provided', async () => {
-    const result = await readAblFile.handler({} as Record<string, unknown>)
+    const result = await (readAblFile as ToolModule).handler({})
     isValidMCPResponse(result)
-    expect(result.content[0].text).toContain('required')
+    const first = result.content[0]
+    if (first.type !== 'text') {
+      throw new Error(`Expected first content block to be text, got ${first.type}`)
+    }
+    expect(first.text).toContain('required')
   })
 })
 

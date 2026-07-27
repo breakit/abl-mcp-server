@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "MCP server for OpenEdge ABL — pluggable tool architecture with per-project YAML config",
   "type": "module",
+  "packageManager": "yarn@1.22.22",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -11,13 +12,18 @@
   "files": ["dist", "config.yaml"],
   "scripts": {
     "build": "tsc",
+    "install:local-deps": "yarn --cwd ../abl-mcp-core install && yarn --cwd ../abl-mcp-contracts install && yarn --cwd ../abl-mcp-generators install",
+    "build:local-deps": "yarn --cwd ../abl-mcp-core build && yarn --cwd ../abl-mcp-contracts build && yarn --cwd ../abl-mcp-generators build",
+    "link:local-deps": "node ./link-local-deps.mjs",
+    "setup:local": "yarn install:local-deps && yarn build:local-deps && yarn link:local-deps",
     "start": "node dist/index.js",
     "test": "vitest run"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@breakit/abl-mcp-core": "git+https://github.com/breakit/abl-mcp-core",
-    "@breakit/abl-mcp-generators": "git+https://github.com/breakit/abl-mcp-generators"
+    "@breakit/abl-mcp-generators": "git+https://github.com/breakit/abl-mcp-generators",
+    "@breakit/abl-mcp-contracts": "git+https://github.com/breakit/abl-mcp-contracts"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

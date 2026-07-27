@@ -219,9 +219,29 @@ import { createServer } from '@breakit/abl-mcp-server'
 ```sh
 git clone https://github.com/breakit/abl-mcp-server.git
 cd abl-mcp-server
-npm install
-npm run build
-npm start
+yarn install
+yarn build
+yarn start
+```
+
+### Local Multi-Repo Development
+
+If you are working on the sibling repos in `../abl-mcp-core`, `../abl-mcp-contracts`, and `../abl-mcp-generators`, bootstrap them with Yarn and symlink them into this repo:
+
+```sh
+yarn setup:local
+```
+
+That command:
+
+- runs `yarn install` in each sibling repo
+- builds each sibling repo so their `dist/` entrypoints exist
+- symlinks them into this repo's `node_modules/@breakit/`
+
+When you change sibling repo code, rerun:
+
+```sh
+yarn build:local-deps
 ```
 
 ## Acknowledgments
