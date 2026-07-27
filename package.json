@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@breakit/abl-mcp-core": "^0.1.0",
-    "@breakit/abl-mcp-generators": "^0.1.0"
+    "@breakit/abl-mcp-core": "git+https://github.com/breakit/abl-mcp-core",
+    "@breakit/abl-mcp-generators": "git+https://github.com/breakit/abl-mcp-generators"
   },
   "devDependencies": {
     "typescript": "^5.7.0",
