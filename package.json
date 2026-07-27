@@ -12,8 +12,8 @@
   "files": ["dist", "config.yaml"],
   "scripts": {
     "build": "tsc",
-    "install:local-deps": "yarn --cwd ../abl-mcp-core install && yarn --cwd ../abl-mcp-contracts install && yarn --cwd ../abl-mcp-generators install",
-    "build:local-deps": "yarn --cwd ../abl-mcp-core build && yarn --cwd ../abl-mcp-contracts build && yarn --cwd ../abl-mcp-generators build",
+    "install:local-deps": "yarn --cwd ../abl-mcp-core install && yarn --cwd ../abl-mcp-contracts install && yarn --cwd ../abl-mcp-doc install && yarn --cwd ../abl-mcp-generators install",
+    "build:local-deps": "yarn --cwd ../abl-mcp-core build && yarn --cwd ../abl-mcp-contracts build && yarn --cwd ../abl-mcp-doc build && yarn --cwd ../abl-mcp-generators build",
     "link:local-deps": "node ./link-local-deps.mjs",
     "setup:local": "yarn install:local-deps && yarn build:local-deps && yarn link:local-deps",
     "start": "node dist/index.js",
@@ -23,7 +23,8 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@breakit/abl-mcp-core": "git+https://github.com/breakit/abl-mcp-core",
     "@breakit/abl-mcp-generators": "git+https://github.com/breakit/abl-mcp-generators",
-    "@breakit/abl-mcp-contracts": "git+https://github.com/breakit/abl-mcp-contracts"
+    "@breakit/abl-mcp-contracts": "git+https://github.com/breakit/abl-mcp-contracts",
+    "@breakit/abl-mcp-doc": "git+https://github.com/breakit/abl-mcp-doc"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

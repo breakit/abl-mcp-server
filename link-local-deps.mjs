@@ -6,6 +6,7 @@ const repoDir = path.dirname(fileURLToPath(import.meta.url))
 const packages = {
   '@breakit/abl-mcp-core': path.resolve(repoDir, '../abl-mcp-core'),
   '@breakit/abl-mcp-contracts': path.resolve(repoDir, '../abl-mcp-contracts'),
+  '@breakit/abl-mcp-doc': path.resolve(repoDir, '../abl-mcp-doc'),
   '@breakit/abl-mcp-generators': path.resolve(repoDir, '../abl-mcp-generators'),
 }
 

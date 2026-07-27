@@ -1,4 +1,4 @@
-import { generateAbldocHtml } from '@breakit/abl-mcp-generators'
+import { generateAbldocHtml } from '@breakit/abl-mcp-doc'
 import type { ToolModule } from '../types.js'
 
 export default {

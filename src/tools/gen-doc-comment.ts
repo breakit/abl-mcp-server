@@ -1,4 +1,4 @@
-import { generateDocComment } from '@breakit/abl-mcp-generators'
+import { generateDocComment } from '@breakit/abl-mcp-doc'
 import type { ToolModule } from '../types.js'
 
 export default {

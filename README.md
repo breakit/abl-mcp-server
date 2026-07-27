@@ -226,7 +226,7 @@ yarn start
 
 ### Local Multi-Repo Development
 
-If you are working on the sibling repos in `../abl-mcp-core`, `../abl-mcp-contracts`, and `../abl-mcp-generators`, bootstrap them with Yarn and symlink them into this repo:
+If you are working on the sibling repos in `../abl-mcp-core`, `../abl-mcp-contracts`, `../abl-mcp-doc`, and `../abl-mcp-generators`, bootstrap them with Yarn and symlink them into this repo:
 
 ```sh
 yarn setup:local
@@ -237,11 +237,14 @@ That command:
 - runs `yarn install` in each sibling repo
 - builds each sibling repo so their `dist/` entrypoints exist
 - symlinks them into this repo's `node_modules/@breakit/`
+- includes `@breakit/abl-mcp-doc` in the local sibling package graph
+- links `../abl-mcp-core` into `../abl-mcp-generators/node_modules/@breakit/` for local runtime resolution
 
 When you change sibling repo code, rerun:
 
 ```sh
 yarn build:local-deps
+yarn link:local-deps
 ```
 
 ## Acknowledgments
