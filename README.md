@@ -78,8 +78,8 @@ All 24 tools are available but only a curated subset is enabled by default. Enab
 
 | Tool | Description |
 |---|---|
-| `read-abl-file` | Parse an ABL file — list functions, includes, preprocessor defines |
-| `query-abl-symbols` | List all function symbols in a file |
+| `read-abl-file` | Parse an ABL file — list class info, methods, constructors, functions, includes, using statements, preprocessor defines |
+| `query-abl-symbols` | List all symbols (class, methods, constructors, functions) in a file |
 | `read-df-file` | Parse a `.df` schema — tables, fields, indexes, sequences |
 | `resolve-includes` | Resolve `{include}` paths against the project PROPATH |
 | `list-project-files` | List all `.p`/`.w`/`.cls`/`.i` files in a project |
@@ -89,7 +89,31 @@ All 24 tools are available but only a curated subset is enabled by default. Enab
 | `find-annotations` | Find TODO, FIXME, HACK, XXX, NOTE and similar marker comments |
 | `abl-lint` | Lint ABL files for coding conventions (37 rules defined in config.yaml) |
 
-### Lint Rules
+#### Generative
+
+| Tool | Description |
+|---|---|
+| `gen-doc-comment` | Generate a formatted ABLDoc (`/** */`) comment block for classes, methods, functions, or procedures (powered by `@breakit/abl-mcp-doc`) |
+| `gen-abldoc` | Generate HTML documentation from existing ABLDoc comments in a project (powered by `@breakit/abl-mcp-doc`) |
+| `gen-ablunit-test` | Generate ABLUnit test class extending `TestCase` with ProDataSet CRUD tests |
+
+### Available (disabled by default)
+
+| Tool | Category | Description |
+|---|---|---|
+| `check-project-config` | Analytical | Read `abl.toml` config |
+| `gen-business-entity` | Generative | Generate BE `.cls`, Service, and Controller with ProDataSets and REST annotations |
+| `gen-workflow` | Generative | Generate a workflow `.cls` with Execute + step methods, ProDataSet context |
+| `gen-business-task` | Generative | Generate a standalone Business Task `.cls` with ProDataSet input/output |
+| `gen-ccs-layer` | Generative | Generate the full CCS stack (BE + Service + Controller) |
+| `gen-openapi` | Generative | Generate OpenAPI 3.0 spec from `@openapi.openedge.export` annotations |
+| `init-project` | Generative | Scaffold a new ABL project with directory structure and `abl.toml` |
+| `gen-contract-tt` | Data Contract | Generate temp-table include (`.i`) from schema fields |
+| `gen-contract-ds` | Data Contract | Generate ProDataSet include (`.i`) wrapping the temp-table |
+| `gen-contract-json-schema` | Data Contract | Generate JSON Schema from table/field definition |
+| `gen-contract-typescript` | Data Contract | Generate TypeScript interface from table/field definition |
+
+## Lint Rules
 
 All 37 rules are defined in `config.yaml` (shipped with the server). They are inspired by [Prolint](https://github.com/jcaillon/prolint). To see all active rules: call `abl-lint` with `listRules: true`.
 
@@ -126,29 +150,15 @@ lint:
 | **Misc** | `table-name`, `when-misuse` |
 | **Naming** | `naming-tt`, `naming-ds`, `naming-var`, `naming-param` |
 
-#### Generative
+## Test Generator Skill
 
-| Tool | Description |
-|---|---|
-| `gen-doc-comment` | Generate a formatted ABLDoc (`/** */`) comment block for classes, methods, functions, or procedures (powered by `@breakit/abl-mcp-doc`) |
-| `gen-abldoc` | Generate HTML documentation from existing ABLDoc comments in a project (powered by `@breakit/abl-mcp-doc`) |
-| `gen-ablunit-test` | Generate ABLUnit test class extending `TestCase` with ProDataSet CRUD tests |
+The `gen-ablunit-test` tool generates skeleton ABLUnit test files. For fully filled test files with realistic assertions and data, an opencode skill is available:
 
-### Available (disabled by default)
+- **Skill**: [`llm-fill-ablunit-test`](https://gist.github.com/breakit/10871753d7bc168919c59cde19c572eb)
+- **Workflow**: parse source class → generate skeleton → LLM-fills test data + assertions → write completed file
+- **Requires**: opencode with the `llm-fill-ablunit-test` skill enabled
 
-| Tool | Category | Description |
-|---|---|---|
-| `check-project-config` | Analytical | Read `abl.toml` config |
-| `gen-business-entity` | Generative | Generate BE `.cls`, Service, and Controller with ProDataSets and REST annotations |
-| `gen-workflow` | Generative | Generate a workflow `.cls` with Execute + step methods, ProDataSet context |
-| `gen-business-task` | Generative | Generate a standalone Business Task `.cls` with ProDataSet input/output |
-| `gen-ccs-layer` | Generative | Generate the full CCS stack (BE + Service + Controller) |
-| `gen-openapi` | Generative | Generate OpenAPI 3.0 spec from `@openapi.openedge.export` annotations |
-| `init-project` | Generative | Scaffold a new ABL project with directory structure and `abl.toml` |
-| `gen-contract-tt` | Data Contract | Generate temp-table include (`.i`) from schema fields |
-| `gen-contract-ds` | Data Contract | Generate ProDataSet include (`.i`) wrapping the temp-table |
-| `gen-contract-json-schema` | Data Contract | Generate JSON Schema from table/field definition |
-| `gen-contract-typescript` | Data Contract | Generate TypeScript interface from table/field definition |
+To install, add to your `.opencode/skills/` directory and reference it in your opencode config.
 
 ## Architecture
 
