@@ -1,4 +1,4 @@
-import { loadPropath, resolveIncludes } from '@breakit/abl-mcp-core'
+import { initAblParser, loadPropath, resolveIncludes } from '@breakit/abl-mcp-core'
 import { readFileSync } from 'fs'
 import type { ToolModule } from '../types.js'
 
@@ -8,6 +8,7 @@ export default {
   inputSchema: { type: 'object', properties: { filePath: { type: 'string' }, projectRoot: { type: 'string' } }, required: ['filePath', 'projectRoot'] },
   category: 'analytical',
   handler: async ({ filePath, projectRoot }: { filePath: string; projectRoot: string }) => {
+    await initAblParser()
     const text = readFileSync(filePath, 'utf-8')
     const propath = loadPropath(projectRoot)
     const resolved = resolveIncludes(text, filePath, propath)
